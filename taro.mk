@@ -13,12 +13,15 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/virtual_ab_ota.mk)
 #Enable vm support
 TARGET_ENABLE_VM_SUPPORT := true
 
+$(call inherit-product, $(SRC_TARGET_DIR)/product/emulated_storage.mk)
+
 # For QSSI builds, we should skip building the system image. Instead we build the
 # "non-system" images (that we support).
 
 PRODUCT_BUILD_SYSTEM_IMAGE := false
 PRODUCT_BUILD_SYSTEM_OTHER_IMAGE := false
 PRODUCT_BUILD_VENDOR_IMAGE := true
+PRODUCT_BUILD_VENDOR_DLKM_IMAGE := true
 PRODUCT_BUILD_PRODUCT_IMAGE := false
 PRODUCT_BUILD_SYSTEM_EXT_IMAGE := false
 PRODUCT_BUILD_ODM_IMAGE := false
@@ -65,39 +68,39 @@ TARGET_USES_QMAA_RECOMMENDED_BOOT_CONFIG := false
 #QMAA tech team flag to override global QMAA per tech team
 #true means overriding global QMAA for this tech area
 #false means using global, no override
-TARGET_USES_QMAA_OVERRIDE_RPMB	:= false
-TARGET_USES_QMAA_OVERRIDE_DISPLAY := false
+TARGET_USES_QMAA_OVERRIDE_RPMB := true
+TARGET_USES_QMAA_OVERRIDE_DISPLAY := true
 TARGET_USES_QMAA_OVERRIDE_AUDIO   := false
 TARGET_USES_QMAA_OVERRIDE_VIDEO   := false
-TARGET_USES_QMAA_OVERRIDE_CAMERA  := false
-TARGET_USES_QMAA_OVERRIDE_GFX     := false
-TARGET_USES_QMAA_OVERRIDE_WFD     := false
+TARGET_USES_QMAA_OVERRIDE_CAMERA  := true
+TARGET_USES_QMAA_OVERRIDE_GFX     := true
+TARGET_USES_QMAA_OVERRIDE_WFD     := true
 TARGET_USES_QMAA_OVERRIDE_GPS     := false
 TARGET_USES_QMAA_OVERRIDE_ANDROID_RECOVERY := true
-TARGET_USES_QMAA_OVERRIDE_WLAN    := false
+TARGET_USES_QMAA_OVERRIDE_WLAN    := true
 TARGET_USES_QMAA_OVERRIDE_DPM  := false
-TARGET_USES_QMAA_OVERRIDE_BLUETOOTH   := false
-TARGET_USES_QMAA_OVERRIDE_FM  := false
+TARGET_USES_QMAA_OVERRIDE_BLUETOOTH   := true
+TARGET_USES_QMAA_OVERRIDE_FM  := true
 TARGET_USES_QMAA_OVERRIDE_CVP  := true
-TARGET_USES_QMAA_OVERRIDE_FASTCV  := false
-TARGET_USES_QMAA_OVERRIDE_SCVE  := false
-TARGET_USES_QMAA_OVERRIDE_OPENVX  := false
+TARGET_USES_QMAA_OVERRIDE_FASTCV  := true
+TARGET_USES_QMAA_OVERRIDE_SCVE  := true
+TARGET_USES_QMAA_OVERRIDE_OPENVX  := true
 TARGET_USES_QMAA_OVERRIDE_DIAG := false
 TARGET_USES_QMAA_OVERRIDE_FTM := false
 TARGET_USES_QMAA_OVERRIDE_DATA := true
 TARGET_USES_QMAA_OVERRIDE_DATA_NET := true
 TARGET_USES_QMAA_OVERRIDE_MSM_BUS_MODULE := false
 TARGET_USES_QMAA_OVERRIDE_KERNEL_TESTS_INTERNAL := false
-TARGET_USES_QMAA_OVERRIDE_MSMIRQBALANCE := false
+TARGET_USES_QMAA_OVERRIDE_MSMIRQBALANCE := true
 TARGET_USES_QMAA_OVERRIDE_VIBRATOR := false
 TARGET_USES_QMAA_OVERRIDE_DRM     := true
 TARGET_USES_QMAA_OVERRIDE_KMGK := false
 TARGET_USES_QMAA_OVERRIDE_VPP := false
-TARGET_USES_QMAA_OVERRIDE_GP := false
+TARGET_USES_QMAA_OVERRIDE_GP := true
 TARGET_USES_QMAA_OVERRIDE_BIOMETRICS := false
 TARGET_USES_QMAA_OVERRIDE_SPCOM_UTEST := false
 TARGET_USES_QMAA_OVERRIDE_PERF := false
-TARGET_USES_QMAA_OVERRIDE_SENSORS := false
+TARGET_USES_QMAA_OVERRIDE_SENSORS := true
 TARGET_USES_QMAA_OVERRIDE_SYNX := true
 
 #Full QMAA HAL List
@@ -174,15 +177,14 @@ PRODUCT_PROPERTY_OVERRIDES += ro.control_privapp_permissions=enforce
 
 TARGET_DEFINES_DALVIK_HEAP := true
 $(call inherit-product, device/qcom/vendor-common/common64.mk)
+$(call inherit-product, frameworks/native/build/phone-xhdpi-6144-dalvik-heap.mk)
 
-#Product property overrides to configure the Dalvik heap
-PRODUCT_PROPERTY_OVERRIDES  += \
-	    dalvik.vm.heapstartsize=8m \
-	    dalvik.vm.heapsize=512m \
-	    dalvik.vm.heapgrowthlimit=256m \
-	    dalvik.vm.heaptargetutilization=0.75 \
-	    dalvik.vm.heapminfree=512k \
-	    dalvik.vm.heapmaxfree=8m
+# beluga settings
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.vendor.beluga.p=0x3 \
+    ro.vendor.beluga.c=0x4800 \
+    ro.vendor.beluga.s=0x900 \
+    ro.vendor.beluga.t=0x240
 
 ###########
 # Target naming
@@ -200,10 +202,10 @@ ifeq ($(TARGET_USES_QMAA), true)
 ifneq ($(TARGET_USES_QMAA_OVERRIDE_WLAN), true)
 include device/qcom/wlan/default/wlan.mk
 else
-include device/qcom/wlan/lahaina/wlan.mk
+include device/qcom/wlan/taro/wlan.mk
 endif
 else
-include device/qcom/wlan/lahaina/wlan.mk
+include device/qcom/wlan/taro/wlan.mk
 endif
 
 #----------------------------------------------------------------------
@@ -252,10 +254,7 @@ TARGET_ENABLE_QC_AV_ENHANCEMENTS := true
 
 ###########
 # Kernel configurations
-#Enable llvm support for kernel
-KERNEL_LLVM_SUPPORT := true
-#Enable sd-llvm support for kernel
-KERNEL_SD_LLVM_SUPPORT := false
+TARGET_USES_KERNEL_PLATFORM := false
 
 
 ###########
@@ -308,6 +307,10 @@ PRODUCT_PACKAGES_DEBUG += bootctl
 PRODUCT_PACKAGES += \
   update_engine_sideload
 endif
+
+# Enable incremental fs
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.incremental.enable=yes
 
 PRODUCT_HOST_PACKAGES += \
     configstore_xmlparser
@@ -468,6 +471,8 @@ ifeq ($(TARGET_ENABLE_VM_SUPPORT),true)
 PRODUCT_COPY_FILES += $(LOCAL_PATH)/ueventd-odm.rc:$(TARGET_COPY_OUT_ODM)/ueventd.rc
 PRODUCT_PACKAGES += vmmgr
 endif
+
+PRODUCT_PACKAGES += com.android.vndk.current.on_vendor
 
 ###################################################################################
 # This is the End of target.mk file.
