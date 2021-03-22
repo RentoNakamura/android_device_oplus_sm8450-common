@@ -1,6 +1,8 @@
 BUILD_BROKEN_DUP_RULES := true
 TEMPORARY_DISABLE_PATH_RESTRICTIONS := true
 
+RELAX_USES_LIBRARY_CHECK := true
+
 ALLOW_MISSING_DEPENDENCIES := true
 TARGET_BOARD_PLATFORM := taro
 
@@ -12,6 +14,11 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/virtual_ab_ota.mk)
 
 #Enable vm support
 TARGET_ENABLE_VM_SUPPORT := true
+
+# true: earlycon and console enabled
+# false: console explicitly disabled
+# <empty>: default from kernel
+TARGET_CONSOLE_ENABLED ?=
 
 $(call inherit-product, $(SRC_TARGET_DIR)/product/emulated_storage.mk)
 
@@ -70,12 +77,12 @@ TARGET_USES_QMAA_RECOMMENDED_BOOT_CONFIG := false
 #false means using global, no override
 TARGET_USES_QMAA_OVERRIDE_RPMB := true
 TARGET_USES_QMAA_OVERRIDE_DISPLAY := true
-TARGET_USES_QMAA_OVERRIDE_AUDIO   := false
-TARGET_USES_QMAA_OVERRIDE_VIDEO   := false
+TARGET_USES_QMAA_OVERRIDE_AUDIO   := true
+TARGET_USES_QMAA_OVERRIDE_VIDEO   := true
 TARGET_USES_QMAA_OVERRIDE_CAMERA  := true
 TARGET_USES_QMAA_OVERRIDE_GFX     := true
 TARGET_USES_QMAA_OVERRIDE_WFD     := true
-TARGET_USES_QMAA_OVERRIDE_GPS     := false
+TARGET_USES_QMAA_OVERRIDE_GPS     := true
 TARGET_USES_QMAA_OVERRIDE_ANDROID_RECOVERY := true
 TARGET_USES_QMAA_OVERRIDE_WLAN    := true
 TARGET_USES_QMAA_OVERRIDE_DPM  := false
@@ -128,9 +135,6 @@ endif
 
 SHIPPING_API_LEVEL := 30
 PRODUCT_SHIPPING_API_LEVEL := 30
-# TODO: Remove below flag when upstream compatibility matrix
-# has support for 5.9 kernel
-PRODUCT_OTA_ENFORCE_VINTF_KERNEL_REQUIREMENTS := false
 
 # Set kernel version and ion flags
 TARGET_KERNEL_VERSION := 5.10
@@ -193,8 +197,6 @@ PRODUCT_DEVICE := taro
 PRODUCT_BRAND := qti
 PRODUCT_MODEL := Taro for arm64
 
-PRODUCT_PACKAGES += android.hardware.configstore@1.1-service
-
 #----------------------------------------------------------------------
 # wlan specific
 #----------------------------------------------------------------------
@@ -234,11 +236,11 @@ TARGET_USES_AOSP_FOR_AUDIO := true
 -include $(TOPDIR)vendor/qcom/opensource/audio-hal/primary-hal/configs/common/default.mk
 else
 # Audio hal configuration file
--include $(TOPDIR)vendor/qcom/opensource/audio-hal/primary-hal/configs/lahaina/lahaina.mk
+-include $(TOPDIR)vendor/qcom/opensource/audio-hal/primary-hal/configs/taro/taro.mk
 endif
 else
 # Audio hal configuration file
--include $(TOPDIR)vendor/qcom/opensource/audio-hal/primary-hal/configs/lahaina/lahaina.mk
+-include $(TOPDIR)vendor/qcom/opensource/audio-hal/primary-hal/configs/taro/taro.mk
 endif
 
 TARGET_USES_QCOM_BSP := false
@@ -322,11 +324,6 @@ PRODUCT_PACKAGES += libqrtr
 
 # diag-router
 TARGET_HAS_DIAG_ROUTER := true
-
-# Context hub HAL
-PRODUCT_PACKAGES += \
-    android.hardware.contexthub@1.0-impl.generic \
-    android.hardware.contexthub@1.0-service
 
 # f2fs utilities
 PRODUCT_PACKAGES += \
@@ -473,6 +470,9 @@ PRODUCT_PACKAGES += vmmgr
 endif
 
 PRODUCT_PACKAGES += com.android.vndk.current.on_vendor
+
+# Enable Light HAL Module
+PRODUCT_PACKAGES += android.hardware.lights-service.qti
 
 ###################################################################################
 # This is the End of target.mk file.
