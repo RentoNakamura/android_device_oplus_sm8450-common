@@ -2,7 +2,6 @@ BUILD_BROKEN_DUP_RULES := true
 
 RELAX_USES_LIBRARY_CHECK := true
 
-ALLOW_MISSING_DEPENDENCIES := true
 TARGET_BOARD_PLATFORM := taro
 
 # Default Android A/B configuration
@@ -63,7 +62,7 @@ SYSTEMEXT_SEPARATE_PARTITION_ENABLE := true
 #true means QMAA is enabled for system
 #false means QMAA is disabled for system
 
-TARGET_USES_QMAA := true
+TARGET_USES_QMAA := false
 
 #QMAA flag which is set to incorporate any generic dependencies
 #required for the boot to UI flow in a QMAA enabled target.
@@ -96,13 +95,13 @@ TARGET_USES_QMAA_OVERRIDE_DIAG := true
 TARGET_USES_QMAA_OVERRIDE_FTM := true
 TARGET_USES_QMAA_OVERRIDE_DATA := true
 TARGET_USES_QMAA_OVERRIDE_DATA_NET := true
-TARGET_USES_QMAA_OVERRIDE_MSM_BUS_MODULE := false
+TARGET_USES_QMAA_OVERRIDE_MSM_BUS_MODULE := true
 TARGET_USES_QMAA_OVERRIDE_KERNEL_TESTS_INTERNAL := true
 TARGET_USES_QMAA_OVERRIDE_MSMIRQBALANCE := true
 TARGET_USES_QMAA_OVERRIDE_VIBRATOR := true
 TARGET_USES_QMAA_OVERRIDE_DRM     := true
 TARGET_USES_QMAA_OVERRIDE_KMGK := true
-TARGET_USES_QMAA_OVERRIDE_VPP := false
+TARGET_USES_QMAA_OVERRIDE_VPP := true
 TARGET_USES_QMAA_OVERRIDE_GP := true
 TARGET_USES_QMAA_OVERRIDE_BIOMETRICS := true
 TARGET_USES_QMAA_OVERRIDE_SPCOM_UTEST := true
@@ -110,6 +109,7 @@ TARGET_USES_QMAA_OVERRIDE_PERF := true
 TARGET_USES_QMAA_OVERRIDE_SENSORS := true
 TARGET_USES_QMAA_OVERRIDE_SYNX := true
 TARGET_USES_QMAA_OVERRIDE_SECUREMSM_TESTS := true
+TARGET_USES_QMAA_OVERRIDE_SOTER := true
 
 #Full QMAA HAL List
 QMAA_HAL_LIST := audio video camera display sensors gps
@@ -173,9 +173,6 @@ BOARD_AVB_VBMETA_SYSTEM_ROLLBACK_INDEX := $(PLATFORM_SECURITY_PATCH_TIMESTAMP)
 BOARD_AVB_VBMETA_SYSTEM_ROLLBACK_INDEX_LOCATION := 2
 
 $(call inherit-product, build/make/target/product/gsi_keys.mk)
-
-# Enable userspace reboot
-$(call inherit-product, $(SRC_TARGET_DIR)/product/userspace_reboot.mk)
 
 BOARD_HAVE_BLUETOOTH := false
 BOARD_HAVE_QCOM_FM := false
@@ -251,10 +248,6 @@ TARGET_USES_QCOM_BSP := false
 
 # RRO configuration
 TARGET_USES_RRO := true
-
-PRODUCT_PROPERTY_OVERRIDES += \
-    ro.sf.lcd_density=560
-
 
 TARGET_ENABLE_QC_AV_ENHANCEMENTS := true
 
@@ -454,6 +447,8 @@ PRODUCT_BOOT_JARS += tcmiface
 PRODUCT_BOOT_JARS += telephony-ext
 PRODUCT_PACKAGES += telephony-ext
 
+PRODUCT_ENABLE_QESDK := true
+
 # Vendor property to enable advanced network scanning
 PRODUCT_PROPERTY_OVERRIDES += \
     persist.vendor.radio.enableadvancedscan=true
@@ -469,6 +464,12 @@ PRODUCT_PACKAGES += vmmgr vmmgr.rc vmmgr.conf
 endif
 
 PRODUCT_PACKAGES += com.android.vndk.current.on_vendor
+
+##Armv9-Tests##
+PRODUCT_PACKAGES_DEBUG += bti_test_prebuilt \
+                          pac_test \
+                          mte_tests
+##Armv9-Tests##
 
 ###################################################################################
 # This is the End of target.mk file.
