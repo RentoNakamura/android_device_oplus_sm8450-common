@@ -10,6 +10,9 @@ ENABLE_AB ?= true
 ENABLE_VIRTUAL_AB := true
 $(call inherit-product, $(SRC_TARGET_DIR)/product/virtual_ab_ota.mk)
 
+# Enable debugfs restrictions
+PRODUCT_SET_DEBUGFS_RESTRICTIONS := true
+
 #Enable vm support
 TARGET_ENABLE_VM_SUPPORT := true
 
@@ -110,6 +113,9 @@ TARGET_USES_QMAA_OVERRIDE_SENSORS := true
 TARGET_USES_QMAA_OVERRIDE_SYNX := true
 TARGET_USES_QMAA_OVERRIDE_SECUREMSM_TESTS := true
 TARGET_USES_QMAA_OVERRIDE_SOTER := true
+TARGET_USES_QMAA_OVERRIDE_REMOTE_EFS := true
+TARGET_USES_QMAA_OVERRIDE_TFTP := true
+TARGET_USES_QMAA_OVERRIDE_EID := true
 
 #Full QMAA HAL List
 QMAA_HAL_LIST := audio video camera display sensors gps
@@ -133,6 +139,8 @@ PRODUCT_PACKAGES += init.qti.usb.qmaa.rc
 PRODUCT_PROPERTY_OVERRIDES += persist.vendor.usb.config=adb
 endif
 endif
+
+CLEAN_UP_JAVA_IN_VENDOR := warning
 
 SHIPPING_API_LEVEL := 30
 PRODUCT_SHIPPING_API_LEVEL := 30
@@ -334,11 +342,18 @@ AB_OTA_POSTINSTALL_CONFIG += \
     POSTINSTALL_OPTIONAL_vendor=true
 
 # Camera configuration file. Shared by passthrough/binderized camera HAL
-PRODUCT_PACKAGES += camera.device@3.2-impl
 PRODUCT_PACKAGES += camera.device@1.0-impl
-PRODUCT_PACKAGES += android.hardware.camera.provider@2.4-impl
+PRODUCT_PACKAGES += camx.device@3.5-impl
+PRODUCT_PACKAGES += camx.device@3.4-impl
+PRODUCT_PACKAGES += camx.device@3.3-impl
+PRODUCT_PACKAGES += camx.device@3.2-impl
+PRODUCT_PACKAGES += camx.provider@2.4-impl
+PRODUCT_PACKAGES += camx.provider@2.6-legacy
 # Enable binderized camera HAL
-PRODUCT_PACKAGES += android.hardware.camera.provider@2.4-service_64
+PRODUCT_PACKAGES += vendor.qti.camera.provider@2.6-service_64
+
+# Macro allows Camera module to use new service
+QTI_CAMERA_PROVIDER_SERVICE := true
 
 DEVICE_FRAMEWORK_MANIFEST_FILE := device/qcom/taro/framework_manifest.xml
 
@@ -347,6 +362,7 @@ TARGET_USES_IMAGE_GEN_TOOL := true
 
 # QCV allows multiple chipsets to be supported on a single vendor.
 # Add vintf device manifests for chipsets in taro QCV family below.
+TARGET_USES_QCV := true
 DEVICE_MANIFEST_SKUS := taro
 DEVICE_MANIFEST_TARO_FILES := device/qcom/taro/manifest_taro.xml
 
@@ -411,7 +427,18 @@ PRODUCT_FULL_TREBLE_OVERRIDE := true
 PRODUCT_VENDOR_MOVE_ENABLED := true
 PRODUCT_COMPATIBLE_PROPERTY_OVERRIDE := true
 BOARD_SYSTEMSDK_VERSIONS := 30
-BOARD_VNDK_VERSION := current
+ifeq (true,$(BUILDING_WITH_VSDK))
+    ALLOW_MISSING_DEPENDENCIES := true
+    TARGET_SKIP_CURRENT_VNDK := true
+    BOARD_VNDK_VERSION := 31
+    RECOVERY_SNAPSHOT_VERSION := 31
+    RAMDISK_SNAPSHOT_VERSION := 31
+else
+    BOARD_VNDK_VERSION := current
+    RECOVERY_SNAPSHOT_VERSION := current
+    RAMDISK_SNAPSHOT_VERSION := current
+endif
+
 TARGET_MOUNT_POINTS_SYMLINKS := false
 
 # FaceAuth feature
@@ -452,9 +479,6 @@ PRODUCT_ENABLE_QESDK := true
 # Vendor property to enable advanced network scanning
 PRODUCT_PROPERTY_OVERRIDES += \
     persist.vendor.radio.enableadvancedscan=true
-
-PRODUCT_COPY_FILES += \
-    device/qcom/taro/task_profiles.json:$(TARGET_COPY_OUT_VENDOR)/etc/task_profiles.json
 
 # ODM ueventd.rc
 # - only for use with VM support right now
