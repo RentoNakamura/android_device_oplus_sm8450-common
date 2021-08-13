@@ -1,8 +1,9 @@
+TARGET_BOARD_PLATFORM := taro
+TARGET_BOOTLOADER_BOARD_NAME := taro
+
 BUILD_BROKEN_DUP_RULES := true
 
 RELAX_USES_LIBRARY_CHECK := true
-
-TARGET_BOARD_PLATFORM := taro
 
 # Default Android A/B configuration
 ENABLE_AB ?= true
@@ -22,6 +23,10 @@ TARGET_ENABLE_VM_SUPPORT := true
 TARGET_CONSOLE_ENABLED ?=
 
 $(call inherit-product, $(SRC_TARGET_DIR)/product/emulated_storage.mk)
+
+# Set GRF/Vendor freeze properties
+BOARD_SHIPPING_API_LEVEL := 31
+BOARD_API_LEVEL := 31
 
 # Set SoC manufacturer property
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -145,7 +150,7 @@ PRODUCT_PROPERTY_OVERRIDES += persist.vendor.usb.config=adb
 endif
 endif
 
-CLEAN_UP_JAVA_IN_VENDOR := warning
+CLEAN_UP_JAVA_IN_VENDOR ?= enforcing
 
 JAVA_IN_VENDOR_SOONG_WHITE_LIST :=\
 CuttlefishService\
@@ -159,8 +164,8 @@ AEye\
 FDA\
 SnapdragonCamera\
 
-SHIPPING_API_LEVEL := 30
-PRODUCT_SHIPPING_API_LEVEL := 30
+SHIPPING_API_LEVEL := 31
+PRODUCT_SHIPPING_API_LEVEL := 31
 
 # Set kernel version and ion flags
 TARGET_KERNEL_VERSION := 5.10
@@ -296,9 +301,9 @@ ifeq ($(ENABLE_AB), true)
 PRODUCT_PACKAGES += update_engine \
     update_engine_client \
     update_verifier \
-    android.hardware.boot@1.1-impl-qti \
-    android.hardware.boot@1.1-impl-qti.recovery \
-    android.hardware.boot@1.1-service
+    android.hardware.boot@1.2-impl-qti \
+    android.hardware.boot@1.2-impl-qti.recovery \
+    android.hardware.boot@1.2-service
 
 PRODUCT_HOST_PACKAGES += \
     brillo_update_payload
@@ -353,7 +358,7 @@ PRODUCT_PACKAGES += camx.provider@2.6-legacy
 PRODUCT_PACKAGES += vendor.qti.camera.provider@2.6-service_64
 
 # Macro allows Camera module to use new service
-QTI_CAMERA_PROVIDER_SERVICE := true
+QTI_CAMERA_PROVIDER_SERVICE := 2.7
 
 DEVICE_FRAMEWORK_MANIFEST_FILE := device/qcom/taro/framework_manifest.xml
 
@@ -415,7 +420,7 @@ PRODUCT_COPY_FILES += \
 PRODUCT_FULL_TREBLE_OVERRIDE := true
 PRODUCT_VENDOR_MOVE_ENABLED := true
 PRODUCT_COMPATIBLE_PROPERTY_OVERRIDE := true
-BOARD_SYSTEMSDK_VERSIONS := 30
+BOARD_SYSTEMSDK_VERSIONS := 31
 
 DISABLED_VSDK_SNAPSHOTS_LIST := $(subst $(comma),$(space),$(DISABLED_VSDK_SNAPSHOTS))
 
@@ -510,7 +515,7 @@ PRODUCT_PACKAGES_DEBUG += bti_test_prebuilt \
 ##Armv9-Tests##
 
 # Mediaserver 64 Bit enable
-PRODUCT_PROPERTY_OVERRIDES += \
+PRODUCT_VENDOR_PROPERTIES+= \
      ro.mediaserver.64b.enable=true
 
 ###################################################################################

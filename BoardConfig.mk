@@ -4,10 +4,7 @@
 #
 # TODO(b/124534788): Temporarily allow eng and debug LOCAL_MODULE_TAGS
 
-BOARD_SYSTEMSDK_VERSIONS := 30
-
-TARGET_BOARD_PLATFORM := taro
-TARGET_BOOTLOADER_BOARD_NAME := taro
+BOARD_SYSTEMSDK_VERSIONS := 31
 
 TARGET_ARCH := arm64
 TARGET_ARCH_VARIANT := armv8-a-branchprot
@@ -25,6 +22,8 @@ TARGET_NO_BOOTLOADER := false
 TARGET_USES_UEFI := true
 TARGET_USES_REMOTEPROC := true
 TARGET_NO_KERNEL := false
+
+BOARD_RAMDISK_USE_LZ4 := true
 
 -include $(QCPATH)/common/taro/BoardConfigVendor.mk
 
@@ -116,11 +115,16 @@ BOARD_DTBOIMG_PARTITION_SIZE := 0x0800000
 BOARD_VENDORIMAGE_FILE_SYSTEM_TYPE := ext4
 BOARD_FLASH_BLOCK_SIZE := 131072 # (BOARD_KERNEL_PAGESIZE * 64)
 
+# Use sha256 for dm-verity partitions
+BOARD_AVB_VENDOR_ADD_HASHTREE_FOOTER_ARGS += --hash_algorithm sha256
+BOARD_AVB_VENDOR_DLKM_ADD_HASHTREE_FOOTER_ARGS += --hash_algorithm sha256
+BOARD_AVB_ODM_ADD_HASHTREE_FOOTER_ARGS += --hash_algorithm sha256
+
 TARGET_USES_ION := true
 TARGET_USES_NEW_ION_API := true
 
 BOARD_KERNEL_CMDLINE := video=vfb:640x400,bpp=32,memsize=3072000
-BOARD_BOOTCONFIG := hardware=qcom androidboot.memcg=1 androidboot.usbcontroller=a600000.dwc3
+BOARD_BOOTCONFIG := androidboot.hardware=qcom androidboot.memcg=1 androidboot.usbcontroller=a600000.dwc3
 
 # TARGET_CONSOLE_ENABLED allows to override the default kernel configuration
 # true  -- override kernel configuration to enable console
