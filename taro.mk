@@ -458,10 +458,6 @@ $(warning "BOARD_VNDK_VERSION = $(BOARD_VNDK_VERSION), RECOVERY_SNAPSHOT_VERSION
 
 TARGET_MOUNT_POINTS_SYMLINKS := false
 
-# FaceAuth feature
-PRODUCT_COPY_FILES += \
-    frameworks/native/data/etc/android.hardware.biometrics.face.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.biometrics.face.xml \
-
 # Fingerprint feature
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.fingerprint.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.fingerprint.xml \
@@ -497,6 +493,9 @@ PRODUCT_ENABLE_QESDK := true
 PRODUCT_PROPERTY_OVERRIDES += \
     persist.vendor.radio.enableadvancedscan=true
 
+# Enable Fuse Passthrough
+PRODUCT_PROPERTY_OVERRIDES += persist.sys.fuse.passthrough.enable=true
+
 PRODUCT_COPY_FILES += \
     device/qcom/taro/task_profiles.json:$(TARGET_COPY_OUT_VENDOR)/etc/task_profiles.json
 
@@ -511,12 +510,16 @@ endif
 ##Armv9-Tests##
 PRODUCT_PACKAGES_DEBUG += bti_test_prebuilt \
                           pac_test \
-                          mte_tests
+                          mte_tests \
+                          dynamic_memcpy_prebuilt
 ##Armv9-Tests##
 
 # Mediaserver 64 Bit enable
 PRODUCT_VENDOR_PROPERTIES+= \
      ro.mediaserver.64b.enable=true
+
+# GPU Profiler support
+PRODUCT_VENDOR_PROPERTIES += graphics.gpu.profiler.support=true
 
 ###################################################################################
 # This is the End of target.mk file.

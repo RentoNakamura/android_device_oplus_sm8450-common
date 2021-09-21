@@ -98,6 +98,7 @@ on post-fs-data
 
 on early-boot
     start vendor.sensors
+    verity_update_state
 
 on boot
     write /dev/cpuset/audio-app/cpus 1-2
@@ -125,6 +126,7 @@ on property:vendor.display.lcd_density=640
    setprop dalvik.vm.heapgrowthlimit 512m
 
 on init && property:ro.boot.mode=charger
+    wait_for_prop vendor.all.modules.ready 1
     mount_all /vendor/etc/charger_fw_fstab.qti --early
     wait /sys/kernel/boot_adsp/boot
     write /sys/kernel/boot_adsp/boot 1
@@ -173,6 +175,7 @@ on property:init.svc.vendor.per_mgr=running
     start vendor.per_proxy
 
 on property:sys.shutdown.requested=*
+    write /sys/kernel/qcom_rproc/shutdown_in_progress 1
     stop vendor.per_proxy
 
 on property:vold.decrypt=trigger_restart_framework
