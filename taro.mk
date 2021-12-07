@@ -155,13 +155,10 @@ CLEAN_UP_JAVA_IN_VENDOR ?= enforcing
 JAVA_IN_VENDOR_SOONG_WHITE_LIST :=\
 CuttlefishService\
 pasrservice\
-QFingerprintService\
-QFPCalibration\
 VendorPrivAppPermissionTest\
 
 JAVA_IN_VENDOR_MAKE_WHITE_LIST :=\
 AEye\
-FDA\
 SnapdragonCamera\
 
 SHIPPING_API_LEVEL := 31
@@ -368,8 +365,10 @@ TARGET_USES_IMAGE_GEN_TOOL := true
 # QCV allows multiple chipsets to be supported on a single vendor.
 # Add vintf device manifests for chipsets in taro QCV family below.
 TARGET_USES_QCV := true
-DEVICE_MANIFEST_SKUS := taro
+DEVICE_MANIFEST_SKUS := taro diwali cape
 DEVICE_MANIFEST_TARO_FILES := device/qcom/taro/manifest_taro.xml
+DEVICE_MANIFEST_DIWALI_FILES := device/qcom/taro/manifest_diwali.xml
+DEVICE_MANIFEST_CAPE_FILES := device/qcom/taro/manifest_cape.xml
 
 DEVICE_MATRIX_FILE   := device/qcom/common/compatibility_matrix.xml
 
@@ -495,9 +494,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 # Enable Fuse Passthrough
 PRODUCT_PROPERTY_OVERRIDES += persist.sys.fuse.passthrough.enable=true
-
-PRODUCT_COPY_FILES += \
-    device/qcom/taro/task_profiles.json:$(TARGET_COPY_OUT_VENDOR)/etc/task_profiles.json
 
 # ODM ueventd.rc
 # - only for use with VM support right now

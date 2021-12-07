@@ -27,7 +27,7 @@ BOARD_RAMDISK_USE_LZ4 := true
 
 -include $(QCPATH)/common/taro/BoardConfigVendor.mk
 
-SECTOOLS_SECURITY_PROFILE := $(QCPATH)/securemsm/security_profiles/waipio_tz_security_profile.xml $(QCPATH)/securemsm/security_profiles/fillmore_tz_security_profile.xml
+SECTOOLS_SECURITY_PROFILE := $(QCPATH)/securemsm/security_profiles/waipio_tz_security_profile.xml $(QCPATH)/securemsm/security_profiles/fillmore_tz_security_profile.xml $(QCPATH)/securemsm/security_profiles/cape_tz_security_profile.xml
 
 USE_OPENGL_RENDERER := true
 
@@ -111,7 +111,7 @@ BOARD_USERDATAIMAGE_PARTITION_SIZE := 48318382080
 BOARD_PERSISTIMAGE_PARTITION_SIZE := 33554432
 BOARD_PERSISTIMAGE_FILE_SYSTEM_TYPE := ext4
 BOARD_METADATAIMAGE_PARTITION_SIZE := 16777216
-BOARD_DTBOIMG_PARTITION_SIZE := 0x0800000
+BOARD_DTBOIMG_PARTITION_SIZE := 0x1700000
 BOARD_VENDORIMAGE_FILE_SYSTEM_TYPE := ext4
 BOARD_FLASH_BLOCK_SIZE := 131072 # (BOARD_KERNEL_PAGESIZE * 64)
 
